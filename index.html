@@ -1,0 +1,344 @@
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<div id="app" class="w-full flex flex-col">
+  <!-- loading prompt -->
+  <div class="flex flex-col items-center">
+    <div
+      class="absolute bg-white bg-opacity-60 z-10 h-full w-full flex items-center justify-center"
+      v-if="loading"
+    >
+      <div class="flex items-center">
+        <span class="text-md mr-4">{{ loadingText }}</span>
+        <svg
+          class="animate-spin h-8 w-8 text-gray-800"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Text fields -->
+    <div class="border-b border-gray-900/10 pb-12">
+      <h2 class="text-base font-semibold leading-7 text-gray-900">
+        Report Information(报告信息)
+      </h2>
+      <form
+        class="mt-1 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-6"
+        @submit.prevent="onSubmit"
+      >
+        <div class="col-span-full">
+          <label class="block text-sm font-medium leading-6 text-gray-900"
+            >Client Name(客户名称):</label
+          >
+          <div class="mt-2">
+            <input
+              type="text"
+              v-model="client_name"
+              class="block w-full rounded-md border-0 pl-1 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            />
+          </div>
+        </div>
+
+        <div class="col-span-full">
+          <label class="block text-sm font-medium leading-6 text-gray-900"
+            >Address(地址):</label
+          >
+          <div class="mt-2">
+            <input
+              type="text"
+              v-model="address"
+              class="block w-full rounded-md border-0 pl-1 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            />
+          </div>
+        </div>
+
+        <div class="col-span-2">
+          <label class="block text-sm font-medium leading-6 text-gray-900"
+            >Date(日期):</label
+          >
+          <div class="mt-2">
+            <input
+              type="date"
+              v-model="date"
+              class="block w-full rounded-md border-0 pl-1 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            />
+          </div>
+        </div>
+
+        <div class="col-span-full">
+          <label class="block text-sm font-medium leading-6 text-gray-900"
+            >Question(问题):</label
+          >
+          <div class="mt-2">
+            <textarea
+              v-model="question"
+              class="block w-full rounded-md border-0 pl-1 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="col-span-full">
+          <label class="block text-sm font-medium leading-6 text-gray-900"
+            >Answer(答案):</label
+          >
+          <div class="mt-2">
+            <textarea
+              v-model="answer"
+              class="block w-full rounded-md border-0 pl-1 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Upload and Submit Buttons -->
+        <div class="col-span-2 items-center justify-center bg-grey-lighter">
+          <label
+            class="w-64 flex flex-col items-center px-4 py-6 bg-white text-blue rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue hover:text-red-300"
+          >
+            <svg
+              class="w-8 h-8"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path
+                d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z"
+              />
+            </svg>
+            <span class="mt-2 text-base leading-normal">Images(上传图片)</span>
+            <input
+              type="file"
+              accept="image/*"
+              class="hidden"
+              multiple
+              @change="onImagesUpload"
+            />
+          </label>
+          <p class="text-xs" v-for="photo in photos">{{ photo.name }}</p>
+        </div>
+        <div class="col-span-2 items-center justify-center bg-grey-lighter">
+          <label
+            class="w-64 flex flex-col items-center px-4 py-6 bg-white text-blue rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue hover:text-red-300"
+          >
+            <svg
+              class="w-8 h-8"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path
+                d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z"
+              />
+            </svg>
+            <span class="mt-2 text-base leading-normal">Video(上传视频)</span>
+            <input
+              type="file"
+              accept="video/*"
+              class="hidden"
+              @change="onVideoUpload"
+            />
+          </label>
+          <p v-if="video" class="text-xs">{{ video.name }}</p>
+        </div>
+        <div class="mt-2 flex items-center justify-end gap-x-6">
+          <button
+            type="submit"
+            class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            Submit(提交)
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue;
+    createApp({
+      setup() {
+        // initialized state of textfields
+        const client_name = ref("");
+        const address = ref("");
+        const date = ref(new Date().toISOString().split("T")[0]);
+        const question = ref("");
+        const answer = ref("");
+        const photos = ref([]);
+        const video = ref("");
+        const loading = ref(false);
+        const loadingText = ref("");
+
+        let photoLinks = [];
+        let videoLink = "";
+        const pdfWorker = new Worker("./pdfWorker.js");
+
+        // events on file input
+        function onImagesUpload(e) {
+          console.log(e.target.files);
+          photos.value = e.target.files;
+        }
+        function onVideoUpload(e) {
+          console.log(e.target.files);
+          video.value = e.target.files[0];
+        }
+
+        // event on submit
+        async function onSubmit() {
+          // upload images and videos
+          const photosResults = await uploadPhotos();
+          const videoResult = await uploadVideo();
+          console.log("uploading imgur results", [
+            ...photosResults,
+            videoResult,
+          ]);
+
+          // generate PDF from PDFmonkey
+          const pdfResult = await uploadToPDFMonkey(photosResults, videoResult);
+          console.log("uploading PDF results", pdfResult);
+          if (pdfResult.status != "success") {
+            verifyPDFMonkey(pdfResult.id);
+          } else {
+            window.open(pdfResult.download_url, "", "popup");
+          }
+        }
+
+        // bulk upload all photos
+        async function uploadPhotos() {
+          if (!photos.value) return Promise.resolve([]);
+          loading.value = true;
+          loadingText.value = "Uploading Images(上传图片中)";
+          let photosPromises = [];
+          for (photo of photos.value) {
+            photosPromises.push(uploadToImgur(photo));
+          }
+          return Promise.all(photosPromises).then((results) => {
+            loading.value = false;
+            photoLinks.value = results;
+            return Promise.resolve(results);
+          });
+        }
+        // upload video walk through to imgur
+        async function uploadVideo() {
+          if (!video.value) return Promise.resolve("");
+          loading.value = true;
+          loadingText.value = "Uploading Video(上传视频中)";
+          return uploadToImgur(video.value, "video").then((result) => {
+            loading.value = false;
+            videoLink.value = result;
+            return Promise.resolve(result);
+          });
+        }
+        // upload single image/video to imgur
+        async function uploadToImgur(photo, type = "image") {
+          let headers = new Headers();
+          headers.append("Authorization", "Client-ID 9d5a5a37cf2bfa3");
+
+          let body = new FormData();
+          body.append(type, photo);
+
+          var requestOptions = {
+            method: "POST",
+            headers,
+            body,
+            redirect: "follow",
+          };
+
+          return fetch("https://api.imgur.com/3/upload", requestOptions)
+            .then((response) => response.json())
+            .then((result) => {
+              console.log("uploaded to imgur", result);
+              return Promise.resolve(result.data.link);
+            })
+            .catch((error) => console.log("error", error));
+        }
+        
+        // upload payload to PDFMonkey
+        async function uploadToPDFMonkey() {
+          loading.value = true;
+          loadingText.value = "Generating PDF(生成PDF中)";
+          let headers = new Headers();
+          headers.append("Authorization", "Bearer eRddESYbNQvRbsAaMStq");
+          headers.append("Content-Type", "application/json");
+
+          let body = JSON.stringify({
+            document: {
+              document_template_id: "30F04478-7B24-4EF6-9DCE-9642F650DC38",
+              status: "pending", // generate in one go
+              payload: {
+                client_name: client_name.value,
+                address: address.value,
+                date: date.value,
+                question: question.value,
+                answer: answer.value,
+                photos: photoLinks.value.join(", "),
+                video: videoLink.value,
+              },
+              meta: {
+                _filename: `${client_name.value}_${date.value}.pdf`,
+              },
+            },
+          });
+
+          var requestOptions = {
+            method: "POST",
+            headers,
+            body,
+          };
+
+          return fetch(
+            "https://api.pdfmonkey.io/api/v1/documents",
+            requestOptions
+          )
+            .then((response) => response.json())
+            .then((result) => {
+              console.log("uploaded to PDFMonkey", result);
+              loading.value = false;
+              return Promise.resolve(result.document);
+            })
+            .catch((error) => console.log("error", error));
+        }
+        // retrieve PDF from PDFMonkey
+        function verifyPDFMonkey(id) {
+          console.log("PDF is still generating, retriving...");
+          pdfWorker.postMessage(id);
+          loading.value = true;
+          loadingText.value = "Retriving PDF(获取PDF中)";
+          pdfWorker.onmessage = function (event) {
+            console.log("PDF retrieved", event);
+            loading.value = false;
+            pdfWorker.terminate();
+            window.open(event.data, "", "popup");
+          };
+        }
+        
+        return {
+          client_name,
+          address,
+          date,
+          question,
+          answer,
+          photos,
+          video,
+          loading,
+          loadingText,
+          onSubmit,
+          onImagesUpload,
+          onVideoUpload,
+        };
+      },
+    }).mount("#app");
+  </script>
+</div>
