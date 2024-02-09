@@ -187,11 +187,9 @@
 
         // events on file input
         function onImagesUpload(e) {
-          console.log(e.target.files);
           photos.value = e.target.files;
         }
         function onVideoUpload(e) {
-          console.log(e.target.files);
           video.value = e.target.files[0];
         }
 
@@ -226,7 +224,7 @@
           }
           return Promise.all(photosPromises).then((results) => {
             loading.value = false;
-            photoLinks.value = results;
+            photoLinks = results;
             return Promise.resolve(results);
           });
         }
@@ -237,7 +235,7 @@
           loadingText.value = "Uploading Video(上传视频中)";
           return uploadToImgur(video.value, "video").then((result) => {
             loading.value = false;
-            videoLink.value = result;
+            videoLink = result;
             return Promise.resolve(result);
           });
         }
@@ -283,8 +281,8 @@
                 date: date.value,
                 question: question.value,
                 answer: answer.value,
-                photos: photoLinks.value.join(", "),
-                video: videoLink.value,
+                photos: photoLinks.join(", "),
+                video: videoLink,
               },
               meta: {
                 _filename: `${client_name.value}_${date.value}.pdf`,
