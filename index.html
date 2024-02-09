@@ -209,6 +209,7 @@
           if (pdfResult.status != "success") {
             verifyPDFMonkey(pdfResult.id);
           } else {
+            loading.value = false;
             window.open(pdfResult.download_url, "", "popup");
           }
         }
@@ -314,7 +315,7 @@
           pdfWorker.postMessage(id);
           loading.value = true;
           loadingText.value = "Retriving PDF(获取PDF中)";
-          pdfWorker.onmessage = function (event) {
+          pdfWorker.onmessage = (event) => {
             console.log("PDF retrieved", event);
             loading.value = false;
             pdfWorker.terminate();
