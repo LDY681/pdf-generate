@@ -1,0 +1,119 @@
+<div class="h-400 overflow-y-scroll">
+  <div class="flex flex-row items-center justify-between mb-8">
+    <!--contact info-->
+    <div class="w-3/5">
+      <h1 class="font-bold mb-2 text-xl">PropView4U Rental Inspection Service</h1>
+      <dl class="flex text-sm">
+        <dt class="pr-2 font-bold">ABN:</dt>
+        <dd> 82 316 690 564</dd>
+      </dl>
+      <dl class="flex text-sm">
+        <dt class="pr-2 font-bold">Inspector:</dt>
+        <dd>Dayu L.</dd>
+      </dl>
+      <dl class="flex text-sm">
+        <dt class="pr-2 font-bold">T:</dt>
+        <dd>+61 452 267 362</dd>
+        <dt class="pr-2 font-bold">&nbsp; E:</dt>
+        <dd>support@propview4u.com.au</dd>
+      </dl>
+      <dl class="flex text-sm">
+        <dt class="pr-2 font-bold">W:</dt>
+        <dd>www.propview4u.com.au</dd>
+      </dl>
+    </div>
+    <!--logo placeholder-->
+    <div>
+      <img
+        src="http://propview4u.com.au/wp-content/uploads/2024/01/PropView4U-logos_black.png"
+        height="160"
+        width="160"
+      >
+    </div>
+  </div>
+
+  <!--greeting details-->
+  <p class="font-bold text-sm">Dear {{ client_name }}</p>
+  <p class="text-sm mb-2">Thank you for choosing PropView4U, our dedicated agent has attended a scheduled rental inspection on your behalf as follows:</p>
+  <dl class="flex text-sm">
+    <dt class="pr-2 font-bold">Address:</dt>
+    <dd>{{address}}</dd>
+  </dl>
+  <dl class="flex text-sm mb-2">
+    <dt class="pr-2 font-bold">Date/Time:</dt>
+    <dd>{{date}}</dd>
+  </dl>
+
+  <p class="text-sm mb-10">Here is a report of the property including photos and videos:</p>
+
+  <!--instructions-->
+  <div class="bg-white p-2 shadow-md mb-8">
+    <div class="items-center flex justify-start items-baseline mb-2">
+      <div class="bl-red ml-2 pl-2 pr-2">Instructions:</div>
+      <div class="mr-2 text-gray-500 text-sm">{{instruction}}</div>
+    </div>
+    <div class="items-center flex justify-start items-baseline">
+      <div class="bl-blue ml-2 pl-2  pr-2">Comments:</div>
+      <div class="mr-2 text-gray-500 text-sm">{{comment}}</div>
+    </div>
+  </div>
+
+  <!--images-->
+  <div class="bg-white p-2 shadow-md mb-8">
+    <div class="bl-red ml-2 pl-2 pr-2 mb-2">Photos:</div>
+    <div class="grid grid-cols-1 gap-2">
+      {% assign photoArray = photos | split: ", " %}
+      {% for photo in photoArray %}
+      <div>
+        <img
+          src="{{photo}}"
+          class="h-auto max-w-full rounded-lg"
+        >
+        </img>
+      </div>
+      {% endfor %}
+  </div>
+    
+  </div>
+  <!--video walkthrough-->
+  {% if video %}
+  <div class="bg-white p-2 shadow-md mb-8">
+    <div class="bl-red ml-2 pl-2 pr-2 mb-2">Video walkthrough:</div>
+    <div class="flex flex-col justify-center items-center">
+      <a href="{{video}}">
+      <img
+        src="https://placehold.co/600x400?text=Click+Here+to+Watch&font=roboto"
+        height="400"
+        width="400"
+      ></img>
+    </a>
+    </div>
+  </div>
+  {% endif %}
+
+  <p class="text-sm mt-40">
+  PropView4U thanks you for your trust on us and looks forward to assistng you with your future home hunt.
+  <br>
+  Yours sincerely,
+  <br>
+  PropView4U team
+  </p>
+</div>
+  
+
+<style>
+@import url("https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.3/tailwind.min.css");
+
+body {
+  font-size: 18px;
+  background-color: rgba(0,162,243, .1);
+  padding: 40px;
+}
+
+.bl-red {
+  border-left: 3px solid #E53E3E;
+}
+.bl-blue {
+  border-left: 3px solid #1d4ed8;
+}
+</style>

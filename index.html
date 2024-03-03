@@ -1,11 +1,13 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <div id="app" class="w-full flex flex-col">
-  <!-- loading prompt -->
-  <div class="flex flex-col items-center">
+  <!-- report textareas -->
+  <div v-if="showTextfields" class="flex flex-col items-center">
+    <!-- loading prompt -->
     <div
       class="absolute bg-white bg-opacity-60 z-10 h-full w-full flex items-center justify-center"
-      v-if="loading"
+      v-if="loading && false"
     >
       <div class="flex items-center">
         <span class="text-md mr-4">{{ loadingText }}</span>
@@ -82,11 +84,11 @@
 
         <div class="col-span-full">
           <label class="block text-sm font-medium leading-6 text-gray-900"
-            >Question(问题):</label
+            >Instruction(说明):</label
           >
           <div class="mt-2">
             <textarea
-              v-model="question"
+              v-model="instruction"
               class="block w-full rounded-md border-0 pl-1 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             ></textarea>
           </div>
@@ -94,11 +96,11 @@
 
         <div class="col-span-full">
           <label class="block text-sm font-medium leading-6 text-gray-900"
-            >Answer(答案):</label
+            >Comment(评论):</label
           >
           <div class="mt-2">
             <textarea
-              v-model="answer"
+              v-model="comment"
               class="block w-full rounded-md border-0 pl-1 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             ></textarea>
           </div>
@@ -166,6 +168,104 @@
     </div>
   </div>
 
+  <!-- pdf preview -->
+  <div id="pdf-preview" class="pdf-preview">
+    <div class="flex flex-row items-center justify-between mb-8">
+      <!--contact info-->
+      <div class="w-3/5">
+        <h1 class="font-bold mb-2 text-xl">PropView4U Rental Inspection Service</h1>
+        <dl class="flex text-sm">
+          <dt class="pr-2 font-bold">ABN:</dt>
+          <dd> 82 316 690 564</dd>
+        </dl>
+        <dl class="flex text-sm">
+          <dt class="pr-2 font-bold">Inspector:</dt>
+          <dd>Dayu L.</dd>
+        </dl>
+        <dl class="flex text-sm">
+          <dt class="pr-2 font-bold">T:</dt>
+          <dd>+61 452 267 362</dd>
+          <dt class="pr-2 font-bold">&nbsp; E:</dt>
+          <dd>support@propview4u.com.au</dd>
+        </dl>
+        <dl class="flex text-sm">
+          <dt class="pr-2 font-bold">W:</dt>
+          <dd>www.propview4u.com.au</dd>
+        </dl>
+      </div>
+      <!--logo placeholder-->
+      <div>
+        <img
+          src="./logo.png"
+          height="160"
+          width="160"
+        >
+      </div>
+    </div>
+  
+    <!--greeting details-->
+    <p class="font-bold text-sm">Dear {{ client_name }}</p>
+    <p class="text-sm mb-2">Thank you for choosing PropView4U, our dedicated agent has attended a scheduled rental inspection on your behalf as follows:</p>
+    <dl class="flex text-sm">
+      <dt class="pr-2 font-bold">Address:</dt>
+      <dd>{{address}}</dd>
+    </dl>
+    <dl class="flex text-sm mb-2">
+      <dt class="pr-2 font-bold">Date/Time:</dt>
+      <dd>{{date}}</dd>
+    </dl>
+  
+    <p class="text-sm mb-10">Here is a report of the property including photos and videos:</p>
+  
+    <!--instructions-->
+    <div v-if="instruction || comment" class="bg-white p-2 shadow-md mb-8">
+      <div class="items-center flex justify-start items-baseline mb-2">
+        <div class="bl-red ml-2 pl-2 pr-2">Instructions:</div>
+        <div class="mr-2 text-gray-500 text-sm">{{instruction}}</div>
+      </div>
+      <div class="items-center flex justify-start items-baseline">
+        <div class="bl-blue ml-2 pl-2  pr-2">Comments:</div>
+        <div class="mr-2 text-gray-500 text-sm">{{comment}}</div>
+      </div>
+    </div>
+  
+    <!--images-->
+    <div v-if="photos.length > 0" class="bg-white p-2 shadow-md mb-8">
+      <div class="bl-red ml-2 pl-2 pr-2 mb-2">Photos:</div>
+      <div class="grid grid-cols-1 gap-2">
+        <div v-for="photo in photos">
+          <img
+            :src="createImgUrl(photo)"
+            class="h-auto max-w-full rounded-lg"
+          >
+          </img>
+        </div>
+    </div>
+      
+    </div>
+    <!--video walkthrough-->
+    <div v-if="video" class="bg-white p-2 shadow-md mb-8">
+      <div class="bl-red ml-2 pl-2 pr-2 mb-2">Video walkthrough:</div>
+      <div class="flex flex-col justify-center items-center">
+        <a :href="videoLink">
+        <img
+          src="https://placehold.co/600x400?text=Click+Here+to+Watch&font=roboto"
+          height="400"
+          width="400"
+        ></img>
+      </a>
+      </div>
+    </div>
+  
+    <p class="text-sm mt-20">
+    PropView4U thanks you for your trust on us and looks forward to assistng you with your future home hunt.
+    <br>
+    Yours sincerely,
+    <br>
+    PropView4U team
+    </p>
+  </div>
+  <!-- update report information -->
   <script>
     const { createApp, ref } = Vue;
     createApp({
@@ -174,15 +274,16 @@
         const client_name = ref("");
         const address = ref("");
         const date = ref(new Date().toISOString().split("T")[0]);
-        const question = ref("");
-        const answer = ref("");
+        const instruction = ref("");
+        const comment = ref("");
         const photos = ref([]);
         const video = ref("");
+        const videoLink = ref("");
+        const showTextfields = ref(true)
         const loading = ref(false);
         const loadingText = ref("");
 
         let photoLinks = [];
-        let videoLink = "";
         const pdfWorker = new Worker("./pdfWorker.js");
 
         // events on file input
@@ -192,43 +293,47 @@
         function onVideoUpload(e) {
           video.value = e.target.files[0];
         }
-
+        function createImgUrl(e) {
+          return URL.createObjectURL(e);
+        }
         // event on submit
         async function onSubmit() {
+          showTextfields.value = false;
           // upload images and videos
-          const photosResults = await uploadPhotos();
+          // const photosResults = await uploadPhotos();
           const videoResult = await uploadVideo();
-          console.log("uploading imgur results", [
-            ...photosResults,
-            videoResult,
-          ]);
+          console.log("uploading imgur results", videoResult);
+
+          // generate PDF
+          const pdfResult = await generatePDF(videoResult);
 
           // generate PDF from PDFmonkey
-          const pdfResult = await uploadToPDFMonkey(photosResults, videoResult);
-          console.log("uploading PDF results", pdfResult);
-          if (pdfResult.status != "success") {
-            verifyPDFMonkey(pdfResult.id);
-          } else {
-            loading.value = false;
-            window.open(pdfResult.download_url, "", "popup");
-          }
+          // const pdfResult = await uploadToPDFMonkey(photosResults, videoResult);
+          // console.log("uploading PDF results", pdfResult);
+          // if (pdfResult.status != "success") {
+          //   verifyPDFMonkey(pdfResult.id);
+          // } else {
+          //   loading.value = false;
+          //   window.open(pdfResult.download_url, "", "popup");
+          // }
         }
 
         // bulk upload all photos
-        async function uploadPhotos() {
-          if (!photos.value) return Promise.resolve([]);
-          loading.value = true;
-          loadingText.value = "Uploading Images(上传图片中)";
-          let photosPromises = [];
-          for (photo of photos.value) {
-            photosPromises.push(uploadToImgur(photo));
-          }
-          return Promise.all(photosPromises).then((results) => {
-            loading.value = false;
-            photoLinks = results;
-            return Promise.resolve(results);
-          });
-        }
+        // async function uploadPhotos() {
+        //   if (!photos.value) return Promise.resolve([]);
+        //   loading.value = true;
+        //   loadingText.value = "Uploading Images(上传图片中)";
+        //   let photosPromises = [];
+        //   for (photo of photos.value) {
+        //     photosPromises.push(uploadToImgur(photo));
+        //   }
+        //   return Promise.all(photosPromises).then((results) => {
+        //     loading.value = false;
+        //     photoLinks = results;
+        //     return Promise.resolve(results);
+        //   });
+        // }
+
         // upload video walk through to imgur
         async function uploadVideo() {
           if (!video.value) return Promise.resolve("");
@@ -236,7 +341,7 @@
           loadingText.value = "Uploading Video(上传视频中)";
           return uploadToImgur(video.value, "video").then((result) => {
             loading.value = false;
-            videoLink = result;
+            videoLink.value = result;
             return Promise.resolve(result);
           });
         }
@@ -264,80 +369,110 @@
             .catch((error) => console.log("error", error));
         }
         
+        function generatePDF() {
+          setTimeout(() => {
+            var element = document.getElementById('pdf-preview');
+            var opt = {
+              filename:     `${client_name.value}_${date.value}.pdf`,
+              image:        { type: 'jpeg', quality: 0.95 },
+              enableLinks: true,
+              html2canvas:  { scale: 2, useCORS: true },
+              jsPDF:        { unit: 'in', format: 'a4', orientation: 'p' }
+            };
+            html2pdf(element, opt);
+          }, 1000)
+        }
         // upload payload to PDFMonkey
-        async function uploadToPDFMonkey() {
-          loading.value = true;
-          loadingText.value = "Generating PDF(生成PDF中)";
-          let headers = new Headers();
-          headers.append("Authorization", "Bearer eRddESYbNQvRbsAaMStq");
-          headers.append("Content-Type", "application/json");
+        // async function uploadToPDFMonkey() {
+        //   loading.value = true;
+        //   loadingText.value = "Generating PDF(生成PDF中)";
+        //   let headers = new Headers();
+        //   headers.append("Authorization", "Bearer eRddESYbNQvRbsAaMStq");
+        //   headers.append("Content-Type", "application/json");
 
-          let body = JSON.stringify({
-            document: {
-              document_template_id: "30F04478-7B24-4EF6-9DCE-9642F650DC38",
-              status: "pending", // generate in one go
-              payload: {
-                client_name: client_name.value,
-                address: address.value,
-                date: date.value,
-                question: question.value,
-                answer: answer.value,
-                photos: photoLinks.join(", "),
-                video: videoLink,
-              },
-              meta: {
-                _filename: `${client_name.value}_${date.value}.pdf`,
-              },
-            },
-          });
+        //   let body = JSON.stringify({
+        //     document: {
+        //       document_template_id: "30F04478-7B24-4EF6-9DCE-9642F650DC38",
+        //       status: "pending", // generate in one go
+        //       payload: {
+        //         client_name: client_name.value,
+        //         address: address.value,
+        //         date: date.value,
+        //         instruction: instruction.value,
+        //         comment: comment.value,
+        //         photos: photoLinks.join(", "),
+        //         video: videoLink,
+        //       },
+        //       meta: {
+        //         _filename: `${client_name.value}_${date.value}.pdf`,
+        //       },
+        //     },
+        //   });
 
-          var requestOptions = {
-            method: "POST",
-            headers,
-            body,
-          };
+        //   var requestOptions = {
+        //     method: "POST",
+        //     headers,
+        //     body,
+        //   };
 
-          return fetch(
-            "https://api.pdfmonkey.io/api/v1/documents",
-            requestOptions
-          )
-            .then((response) => response.json())
-            .then((result) => {
-              console.log("uploaded to PDFMonkey", result);
-              loading.value = false;
-              return Promise.resolve(result.document);
-            })
-            .catch((error) => console.log("error", error));
-        }
+        //   return fetch(
+        //     "https://api.pdfmonkey.io/api/v1/documents",
+        //     requestOptions
+        //   )
+        //     .then((response) => response.json())
+        //     .then((result) => {
+        //       console.log("uploaded to PDFMonkey", result);
+        //       loading.value = false;
+        //       return Promise.resolve(result.document);
+        //     })
+        //     .catch((error) => console.log("error", error));
+        // }
         // retrieve PDF from PDFMonkey
-        function verifyPDFMonkey(id) {
-          console.log("PDF is still generating, retriving...");
-          pdfWorker.postMessage(id);
-          loading.value = true;
-          loadingText.value = "Retriving PDF(获取PDF中)";
-          pdfWorker.onmessage = (event) => {
-            console.log("PDF retrieved", event);
-            loading.value = false;
-            pdfWorker.terminate();
-            window.open(event.data, "", "popup");
-          };
-        }
+        // function verifyPDFMonkey(id) {
+        //   console.log("PDF is still generating, retriving...");
+        //   pdfWorker.postMessage(id);
+        //   loading.value = true;
+        //   loadingText.value = "Retriving PDF(获取PDF中)";
+        //   pdfWorker.onmessage = (event) => {
+        //     console.log("PDF retrieved", event);
+        //     loading.value = false;
+        //     pdfWorker.terminate();
+        //     window.open(event.data, "", "popup");
+        //   };
+        // }
         
         return {
           client_name,
           address,
           date,
-          question,
-          answer,
+          instruction,
+          comment,
           photos,
           video,
+          videoLink,
           loading,
           loadingText,
+          showTextfields,
           onSubmit,
           onImagesUpload,
           onVideoUpload,
+          createImgUrl,
         };
       },
     }).mount("#app");
   </script>
 </div>
+
+<style>
+  .pdf-preview {
+    font-size: 18px;
+    background-color: rgba(0,162,243, .1);
+    padding: 40px;
+  }
+  .bl-red {
+    border-left: 3px solid #E53E3E;
+  }
+  .bl-blue {
+    border-left: 3px solid #1d4ed8;
+  }
+  </style>
