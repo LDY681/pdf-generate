@@ -119,7 +119,7 @@
         </div>
 
         <!-- Upload and Submit Buttons -->
-        <div class="col-span-2 items-center justify-center bg-grey-lighter">
+        <!-- <div class="col-span-2 items-center justify-center bg-grey-lighter">
           <label
             class="w-64 flex flex-col items-center px-4 py-6 bg-white text-blue rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue hover:text-red-300"
           >
@@ -143,7 +143,7 @@
             />
           </label>
           <p class="text-xs" v-for="photo in photos">{{ photo.name }}</p>
-        </div>
+        </div> -->
         <!-- <div class="col-span-2 items-center justify-center bg-grey-lighter">
           <label
             class="w-64 flex flex-col items-center px-4 py-6 bg-white text-blue rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue hover:text-red-300"
@@ -233,11 +233,11 @@
     <div v-if="instruction || comment" class="bg-white p-2 shadow-md mb-8">
       <div class="items-center flex justify-start items-baseline mb-2">
         <div class="bl-red ml-2 pl-2 pr-2">Instructions:</div>
-        <div class="mr-2 text-gray-500 text-sm">{{instruction}}</div>
+        <div class="mr-2 text-gray-500 text-sm pre-wrap">{{instruction}}</div>
       </div>
       <div class="items-center flex justify-start items-baseline">
         <div class="bl-blue ml-2 pl-2  pr-2">Comments:</div>
-        <div class="mr-2 text-gray-500 text-sm">{{comment}}</div>
+        <div class="mr-2 text-gray-500 text-sm pre-wrap">{{comment}}</div>
       </div>
     </div>
   
@@ -487,5 +487,8 @@
   }
   .bl-blue {
     border-left: 3px solid #1d4ed8;
+  }
+  .pre-wrap {
+    white-space: pre-wrap;
   }
   </style>
